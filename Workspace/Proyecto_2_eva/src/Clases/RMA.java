@@ -4,6 +4,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/*
+ * @version 0.1
+ */
+
 public class RMA {
 
 	public static void main(String[] args) {
@@ -250,6 +255,7 @@ public class RMA {
 						usuarios.add(new Cliente(nick, pass, nombre, apellidos, dni));
 						menu.ultimaFila();
 						menu.filaCentrada("Cuenta creada con exito");
+						seguir = false;
 						break;
 					case "2":
 						menu.ultimaFila();
@@ -305,6 +311,7 @@ public class RMA {
 			}
 		
 		}while(seguir);
+		sc.close();
 	}
 	
 	public static boolean buscarNickUsuario(String nick, ArrayList<Usuario> usuarios) { //Busca el nick en la lista de usuarios
