@@ -10,6 +10,7 @@ public class Consulta {
 	private int nMensajes;
 	private boolean nuevoMensajeTecnico;
 	private boolean nuevoMensajeCliente;
+	private boolean nueva;
 	
 	/*
 	 * CONSTRUCTORES
@@ -19,6 +20,7 @@ public class Consulta {
 		this.titulo = titulo;
 		mensajes = new ArrayList<Mensaje>();
 		nMensajes = 0;
+		nueva = true;
 	}
 	/*
 	 * METODOS
@@ -27,13 +29,24 @@ public class Consulta {
 	protected void addMensaje(Mensaje mensaje) {
 		nMensajes++;
 		mensaje.setNumero(nMensajes);
-		mensaje.getUsuario().marcarMensaje(this);
 		mensajes.add(mensaje);
+		mensaje.getUsuario().marcarMensaje(this);
+		if(mensaje.getUsuario() instanceof Tecnico) {
+			nueva = false;
+		}
 	}
 	
 	/*
 	 * GETERS AND SETERS
 	 */
+
+	protected boolean isNueva() {
+		return nueva;
+	}
+
+	protected void setNueva(boolean nueva) {
+		this.nueva = nueva;
+	}
 
 	protected ArrayList<Mensaje> getMensajes() {
 		return mensajes;

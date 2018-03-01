@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
- * @version 0.1
+ * @version 1.0
  */
 
 public class RMA {
@@ -18,13 +18,14 @@ public class RMA {
 		boolean seguir;
 		Consulta consultaActual;
 		Usuario usuarioActual;
-		String opcion, nombre, apellidos, apellido1, apellido2, dni, nick, pass;
+		String opcion, nombre, apellidos, apellido1, apellido2, dni, nick, pass, titulo, mensaje;;
 
 		final String[] menuLogin = { "Inciar sesion", "Registrarse", "Borrar cuenta", "Salir" };
 		final String[] menuCliente = { "Abrir Consulta", "Ver mis consultas", "Cambiar contraseña", "Cerrar sesion" };
-		final String[] menuTecnico = { "Todas las consultas", "Consultas nuevas", "Mensajes nuevos",
+		final String[] menuTecnico = { "Todas las consultas", "Consultas nuevas", "Mensajes nuevos","Consultas cerradas",
 				"Cambiar contraseña", "Cerrar sesion" };
-		final String[] menuConsultaCliente = { "Añadir mensaje", "Borrar Consulta", "Volver Atras" };
+		final String[] menuConsulta= { "Añadir mensaje", "Borrar Consulta", "Volver Atras" };
+		final String[] menuHistorial= { "Volver Atras" };
 		final String[] normasNick = { "Debe estar disponible", "Entre 4 y 12 caracteres",
 				"Solo numeros, letras y guiones" };
 		final String[] normasPass = { "Minimo 8 caracteres", "Mninimo 1 mayuscula", "Minimo 1 minuscula",
@@ -36,13 +37,16 @@ public class RMA {
 
 		ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 		ArrayList<Consulta> consultas = new ArrayList<Consulta>();
+		ArrayList<Consulta> historial = new ArrayList<Consulta>();
 		Cliente c = new Cliente("Mario", "jojo", "1", "1", "1");
+		Cliente c2 = new Cliente("pepe", "jojo", "1", "1", "1");
 		Tecnico t = new Tecnico("Sidorf", "jojo", "1", "1", "1");
 		usuarios.add(c);
+		usuarios.add(t);
 		consultas.add(new Consulta(c, "consulta1"));
-		consultas.add(new Consulta(c, "consulta2"));
+		consultas.add(new Consulta(c2, "consulta2"));
 		consultas.add(new Consulta(c, "consulta3"));
-		consultas.add(new Consulta(c, "consulta4"));
+		consultas.add(new Consulta(c2, "consulta4"));
 		consultas.add(new Consulta(c, "consulta5"));
 		consultas.get(0).addMensaje(new Mensaje(c,
 				"Hola tengo un problema con mi ordenador. Me gustaria hablar con un tecnico. Grasias de antebraso."));
@@ -85,12 +89,364 @@ public class RMA {
 						 */
 						do {// Bucle menus principales
 							switch (usuarioActual.acceso()) { // Switch para determinar tipo de sesion Tecnico/Cliente
-							case 1:// Sesion Tecnico
-								menu.generarMenu("MENU TECNICO", menuTecnico);
-								menu.pedir("OPCION");
-								sc.nextLine();
+							case 1:
+								/*
+								 * !!! SESION TECNICO !!!!
+								 */
+								seguir = true;
+								do {
+									menu.generarMenu("MENU TECNICO", menuTecnico);
+									menu.pedir("OPCION");
+									opcion = sc.nextLine();
+									switch(opcion) {
+									case "1"://Todas las consultas
+										seguir = true;
+										do {
+											menu.mostrarTodasLasConsultas(consultas);
+											menu.filaCentrada("Seleciona una consulta");
+											do {
+												menu.pedir("OPCION");
+												opcion = sc.nextLine();
+												switch (opcion.toLowerCase()) {
+												case "x":
+													menu.ultimaFila();
+													seguir = false;
+													break;
+												default:
+													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
+														consultaActual = consultas.get(Integer.parseInt(opcion));
+														if (consultaActual.isNuevoMensajeCliente()) {
+															consultaActual.setNuevoMensajeCliente(false);
+														}
+														// Menu consulta
+														menu.ultimaFila();
+														menu.generarMenu(("CONSULTA: " + consultaActual.getTitulo()),
+																menuConsulta, consultaActual);
+														do {
+															menu.pedir("OPCION");
+															opcion = sc.nextLine();
+															switch (opcion) {
+															case "1":// Añadir Mensaje
+																do {
+																	menu.pedir("MENSAJE");
+																	mensaje = sc.nextLine();
+																} while (!comprobarMensaje(mensaje));
+																consultaActual.addMensaje(
+																		new Mensaje(usuarioActual, mensaje));
+																menu.ultimaFila();
+																menu.filaCentrada("Mensaje enviado");
+																menu.ultimaFila();
+																opcion = "3";
+																break;
+															case "2":// Borrar Consulta
+																menu.generarConfirmacion(
+																		"¿Borrar " + consultaActual.getTitulo() + "?");
+																do {
+																	seguir = true;
+																	menu.pedir("OPCION");
+																	opcion = sc.nextLine();
+																	switch (opcion) {
+																	case "1":// Borrar consulta
+																		seguir = false;
+																		historial.add(consultaActual);
+																		consultas.remove(consultaActual);
+																		menu.ultimaFila();
+																		menu.filaCentrada("Consulta Borrada");
+																		menu.ultimaFila();
+																		break;
+																	case "2":// No borrar
+																		seguir = false;
+																		menu.ultimaFila();
+																		menu.filaCentrada(
+																				"La consulta no ha sido borrada");
+																		menu.ultimaFila();
+																		break;
+																	default:// Error Opcion
+																		menu.filaCentrada(
+																				"#ERROR: Opcion no reconocida");
+																	}
+																} while (seguir);
+																opcion = "3";
+																seguir = true;
+																break;
+															default:// Salir / Error Opcion
+																if (!opcion.equals("3")) {
+																	menu.ultimaFila();
+																	menu.filaCentrada("#ERROR: Opcion no reconocida");
+																}
+															}
+
+														} while (!opcion.equals("3"));
+
+													}
+												}
+
+												opcion = "x";
+
+											} while (!opcion.toLowerCase().equals("x"));
+										} while (seguir);
+										seguir = true;
+										break;
+									case "2"://Consultas nuevas
+										seguir = true;
+										do {
+											menu.mostrarConsultasNuevas(consultas);
+											menu.filaCentrada("Seleciona una consulta");
+											do {
+												menu.pedir("OPCION");
+												opcion = sc.nextLine();
+												switch (opcion.toLowerCase()) {
+												case "x":
+													menu.ultimaFila();
+													seguir = false;
+													break;
+												default:
+													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
+														consultaActual = consultas.get(Integer.parseInt(opcion));
+														if (consultaActual.isNuevoMensajeCliente()) {
+															consultaActual.setNuevoMensajeCliente(false);
+														}
+														// Menu consulta
+														menu.ultimaFila();
+														menu.generarMenu(("CONSULTA: " + consultaActual.getTitulo()),
+																menuConsulta, consultaActual);
+														do {
+															menu.pedir("OPCION");
+															opcion = sc.nextLine();
+															switch (opcion) {
+															case "1":// Añadir Mensaje
+																do {
+																	menu.pedir("MENSAJE");
+																	mensaje = sc.nextLine();
+																} while (!comprobarMensaje(mensaje));
+																consultaActual.addMensaje(
+																		new Mensaje(usuarioActual, mensaje));
+																menu.ultimaFila();
+																menu.filaCentrada("Mensaje enviado");
+																menu.ultimaFila();
+																opcion = "3";
+																break;
+															case "2":// Borrar Consulta
+																menu.generarConfirmacion(
+																		"¿Borrar " + consultaActual.getTitulo() + "?");
+																do {
+																	seguir = true;
+																	menu.pedir("OPCION");
+																	opcion = sc.nextLine();
+																	switch (opcion) {
+																	case "1":// Borrar consulta
+																		seguir = false;
+																		historial.add(consultaActual);
+																		consultas.remove(consultaActual);
+																		menu.ultimaFila();
+																		menu.filaCentrada("Consulta Borrada");
+																		menu.ultimaFila();
+																		break;
+																	case "2":// No borrar
+																		seguir = false;
+																		menu.ultimaFila();
+																		menu.filaCentrada(
+																				"La consulta no ha sido borrada");
+																		menu.ultimaFila();
+																		break;
+																	default:// Error Opcion
+																		menu.filaCentrada(
+																				"#ERROR: Opcion no reconocida");
+																	}
+																} while (seguir);
+																opcion = "3";
+																seguir = true;
+																break;
+															default:// Salir / Error Opcion
+																if (!opcion.equals("3")) {
+																	menu.ultimaFila();
+																	menu.filaCentrada("#ERROR: Opcion no reconocida");
+																}
+															}
+
+														} while (!opcion.equals("3"));
+
+													}
+												}
+
+												opcion = "x";
+
+											} while (!opcion.toLowerCase().equals("x"));
+										} while (seguir);
+										seguir = true;
+										break;
+									case "3"://Mensajes nuevos
+										seguir = true;
+										do {
+											menu.mostrarConsultasConMensajesNuevos(consultas);
+											menu.filaCentrada("Seleciona una consulta");
+											do {
+												menu.pedir("OPCION");
+												opcion = sc.nextLine();
+												switch (opcion.toLowerCase()) {
+												case "x":
+													menu.ultimaFila();
+													seguir = false;
+													break;
+												default:
+													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
+														consultaActual = consultas.get(Integer.parseInt(opcion));
+														if (consultaActual.isNuevoMensajeCliente()) {
+															consultaActual.setNuevoMensajeCliente(false);
+														}
+														// Menu consulta
+														menu.ultimaFila();
+														menu.generarMenu(("CONSULTA: " + consultaActual.getTitulo()),
+																menuConsulta, consultaActual);
+														do {
+															menu.pedir("OPCION");
+															opcion = sc.nextLine();
+															switch (opcion) {
+															case "1":// Añadir Mensaje
+																do {
+																	menu.pedir("MENSAJE");
+																	mensaje = sc.nextLine();
+																} while (!comprobarMensaje(mensaje));
+																consultaActual.addMensaje(
+																		new Mensaje(usuarioActual, mensaje));
+																menu.ultimaFila();
+																menu.filaCentrada("Mensaje enviado");
+																menu.ultimaFila();
+																opcion = "3";
+																break;
+															case "2":// Borrar Consulta
+																menu.generarConfirmacion(
+																		"¿Borrar " + consultaActual.getTitulo() + "?");
+																do {
+																	seguir = true;
+																	menu.pedir("OPCION");
+																	opcion = sc.nextLine();
+																	switch (opcion) {
+																	case "1":// Borrar consulta
+																		seguir = false;
+																		historial.add(consultaActual);
+																		consultas.remove(consultaActual);
+																		menu.ultimaFila();
+																		menu.filaCentrada("Consulta Borrada");
+																		menu.ultimaFila();
+																		break;
+																	case "2":// No borrar
+																		seguir = false;
+																		menu.ultimaFila();
+																		menu.filaCentrada(
+																				"La consulta no ha sido borrada");
+																		menu.ultimaFila();
+																		break;
+																	default:// Error Opcion
+																		menu.filaCentrada(
+																				"#ERROR: Opcion no reconocida");
+																	}
+																} while (seguir);
+																opcion = "3";
+																seguir = true;
+																break;
+															default:// Salir / Error Opcion
+																if (!opcion.equals("3")) {
+																	menu.ultimaFila();
+																	menu.filaCentrada("#ERROR: Opcion no reconocida");
+																	menu.ultimaFila();
+																}
+															}
+
+														} while (!opcion.equals("3"));
+
+													}
+												}
+
+												opcion = "x";
+
+											} while (!opcion.toLowerCase().equals("x"));
+										} while (seguir);
+										seguir = true;
+										break;
+									case "4"://Consultas cerradas
+										seguir = true;
+										do {
+											menu.mostrarHistorial(historial);
+											menu.filaCentrada("Seleciona una consulta");
+											do {
+												menu.pedir("OPCION");
+												opcion = sc.nextLine();
+												switch (opcion.toLowerCase()) {
+												case "x":
+													menu.ultimaFila();
+													seguir = false;
+													break;
+												default:
+													if (comprobarOpcionConsulta(usuarioActual, historial, opcion)) {
+														consultaActual = historial.get(Integer.parseInt(opcion));
+														if (consultaActual.isNuevoMensajeCliente()) {
+															consultaActual.setNuevoMensajeCliente(false);
+														}
+														// Menu consulta
+														menu.ultimaFila();
+														menu.generarMenu(("CONSULTA: " + consultaActual.getTitulo()),
+																menuHistorial, consultaActual);
+														do {
+															menu.pedir("OPCION");
+															opcion = sc.nextLine();
+															switch (opcion) {
+															default:// Salir / Error Opcion
+																if (!opcion.equals("1")) {
+																	menu.ultimaFila();
+																	menu.filaCentrada("#ERROR: Opcion no reconocida");
+																	menu.ultimaFila();
+																}
+															}
+
+														} while (!opcion.equals("1"));
+
+													}
+												}
+
+												opcion = "x";
+
+											} while (!opcion.toLowerCase().equals("x"));
+										} while (seguir);
+										seguir = true;
+										break;
+									case "5"://Cambiar contraseña
+										menu.ultimaFila();
+										menu.cabezera("CAMBIO DE CONTRASEÑA");
+										do {
+											seguir = true;
+											menu.pedir("CONTRASEÑA ACTUAL");
+											pass = sc.nextLine();
+											if (comprobarPass(usuarioActual.getNick(), pass, usuarios)) {
+												menu.pedir("NUEVA CONTRASEÑA");
+												pass = sc.nextLine();
+												if (comprobarPass(pass)) {
+													seguir = false;
+													usuarioActual.setPass(pass);
+													menu.ultimaFila();
+													menu.filaCentrada("Contraseña cambiada");
+													menu.ultimaFila();
+												}
+											}
+										} while (seguir);
+										seguir = true;
+										break;
+									case "6"://Cerrar sesion
+										menu.ultimaFila();
+										menu.filaCentrada("Fin de sesion");
+										seguir = false;
+										break;
+									default://Error opcion
+										menu.ultimaFila();
+										menu.filaCentrada("#ERROR: Opcion no reconocida");
+										menu.ultimaFila();
+									}
+								}while(!opcion.equals("6"));
 								break;
-							case -1:// Sesion Cliente
+							case -1:
+								/*
+								 * !!! SESION CLIENTE !!!!
+								 */
 								seguir = true;
 								do {
 									menu.generarMenu("MENU CLIENTE", menuCliente);
@@ -98,7 +454,6 @@ public class RMA {
 									opcion = sc.nextLine();
 									switch (opcion) {
 									case "1":// Abrir consulta
-										String titulo, mensaje;
 										menu.ultimaFila();
 										menu.cabezera("ABRIR CONSULTA");
 										// Peticion titulo
@@ -139,6 +494,7 @@ public class RMA {
 												}
 												menu.ultimaFila();
 												menu.filaCentrada("#ERROR: Opcion no reconocida");
+												menu.ultimaFila();
 											}
 										} while (seguir);
 										seguir = true;
@@ -154,18 +510,18 @@ public class RMA {
 												switch (opcion.toLowerCase()) {
 												case "x":
 													menu.ultimaFila();
-													seguir=false;
+													seguir = false;
 													break;
 												default:
 													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
 														consultaActual = consultas.get(Integer.parseInt(opcion));
-														if(consultaActual.isNuevoMensajeTecnico()) {
+														if (consultaActual.isNuevoMensajeTecnico()) {
 															consultaActual.setNuevoMensajeTecnico(false);
 														}
 														// Menu consulta
 														menu.ultimaFila();
 														menu.generarMenu(("CONSULTA: " + consultaActual.getTitulo()),
-																menuConsultaCliente, consultaActual);
+																menuConsulta, consultaActual);
 														do {
 															menu.pedir("OPCION");
 															opcion = sc.nextLine();
@@ -177,38 +533,39 @@ public class RMA {
 																} while (!comprobarMensaje(mensaje));
 																consultaActual.addMensaje(
 																		new Mensaje(usuarioActual, mensaje));
-																if(!consultaActual.isNuevoMensajeCliente()) {
-																	consultaActual.setNuevoMensajeCliente(true);
-																}
 																menu.ultimaFila();
 																menu.filaCentrada("Mensaje enviado");
 																menu.ultimaFila();
 																opcion = "3";
 																break;
 															case "2":// Borrar Consulta
-																menu.generarConfirmacion("¿Borrar "+consultaActual.getTitulo()+"?");
+																menu.generarConfirmacion(
+																		"¿Borrar " + consultaActual.getTitulo() + "?");
 																do {
 																	seguir = true;
 																	menu.pedir("OPCION");
 																	opcion = sc.nextLine();
 																	switch (opcion) {
-																	case "1"://Borrar consulta
+																	case "1":// Borrar consulta
 																		seguir = false;
+																		historial.add(consultaActual);
 																		consultas.remove(consultaActual);
 																		menu.ultimaFila();
 																		menu.filaCentrada("Consulta Borrada");
 																		menu.ultimaFila();
 																		break;
-																	case "2"://No borrar
+																	case "2":// No borrar
 																		seguir = false;
 																		menu.ultimaFila();
-																		menu.filaCentrada("La consulta no ha sido borrada");
+																		menu.filaCentrada(
+																				"La consulta no ha sido borrada");
 																		menu.ultimaFila();
 																		break;
-																	default://Error Opcion
-																		menu.filaCentrada("#ERROR: Opcion no reconocida");
+																	default:// Error Opcion
+																		menu.filaCentrada(
+																				"#ERROR: Opcion no reconocida");
 																	}
-																}while(seguir);
+																} while (seguir);
 																opcion = "3";
 																seguir = true;
 																break;
@@ -223,9 +580,9 @@ public class RMA {
 
 													}
 												}
-												
+
 												opcion = "x";
-												
+
 											} while (!opcion.toLowerCase().equals("x"));
 										} while (seguir);
 										seguir = true;
@@ -259,6 +616,7 @@ public class RMA {
 									default: // Error opcion
 										menu.ultimaFila();
 										menu.filaCentrada("#ERROR: Opcion no reconocida");
+										menu.ultimaFila();
 									}
 								} while (!opcion.equals("4"));
 								break;

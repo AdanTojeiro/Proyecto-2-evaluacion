@@ -74,7 +74,10 @@ public class Usuario {
 	
 	protected void marcarMensaje(Consulta consulta) {
 		
-	}
+	};
+		
+	
+	
 
 	
 	
