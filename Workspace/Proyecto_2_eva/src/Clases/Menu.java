@@ -184,7 +184,7 @@ public class Menu {
 		}
 		ultimaFila();
 	}
-	protected void mostrarConsultas(Cliente cliente, ArrayList<Consulta> consultas) {
+	protected void mostrarConsultas(Usuario user,Cliente cliente, ArrayList<Consulta> consultas) {
 		Iterator<Consulta> it = consultas.iterator();
 		String titulo;
 		ultimaFila();
@@ -192,8 +192,14 @@ public class Menu {
 		while(it.hasNext()) {
 			Consulta c = it.next();
 			if(c.getCliente().equals(cliente)) {
-				titulo = espacios(c.getTitulo(), mayorEnLista(consultas));
-				fila(consultas.indexOf(c)+" - | "+titulo+" | "+(c.isNuevoMensajeTecnico()?"Nuevo":"Leido")+" | "+c.getnMensajes()+" Mensajes");
+				if(user instanceof Cliente) {
+					titulo = espacios(c.getTitulo(), mayorEnLista(consultas));
+					fila(consultas.indexOf(c)+" - | "+titulo+" | "+(c.isNuevoMensajeTecnico()?"Nuevo":"Leido")+" | "+c.getnMensajes()+" Mensajes");
+				} else if (user instanceof Tecnico) {
+					titulo = espacios(c.getTitulo(), mayorEnLista(consultas));
+					fila(consultas.indexOf(c)+" - | "+titulo+" | "+(c.isNuevoMensajeCliente()?"Nuevo":"Leido")+" | "+c.getnMensajes()+" Mensajes");
+				}
+				
 			}
 		}
 		interFila();
