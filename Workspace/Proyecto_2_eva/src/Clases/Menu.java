@@ -323,7 +323,7 @@ public class Menu {
 	}
 
 	protected void cabezeraMensaje(Mensaje m, ArrayList<Mensaje> lista) {
-		SimpleDateFormat dt1 = new SimpleDateFormat("dd-mm-yyyy hh:mm");
+		SimpleDateFormat dt1 = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 		fila("Autor: " + espacios(m.getUsuario().getNick(), mayorEnListaM(lista)) + " | " + dt1.format(m.getFecha()));
 		subFila();
 
