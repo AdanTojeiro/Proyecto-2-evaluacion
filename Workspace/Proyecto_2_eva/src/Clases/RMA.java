@@ -201,7 +201,7 @@ public class RMA {
 													seguir = false;
 													break;
 												default:
-													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
+													if (comprobarOpcionConsultaNueva(usuarioActual, consultas, opcion)) {
 														consultaActual = consultas.get(Integer.parseInt(opcion));
 														if (consultaActual.isNuevoMensajeCliente()) {
 															consultaActual.setNuevoMensajeCliente(false);
@@ -289,7 +289,7 @@ public class RMA {
 													seguir = false;
 													break;
 												default:
-													if (comprobarOpcionConsulta(usuarioActual, consultas, opcion)) {
+													if (comprobarOpcionConsultaNuevosMensajes(usuarioActual, consultas, opcion)) {
 														consultaActual = consultas.get(Integer.parseInt(opcion));
 														if (consultaActual.isNuevoMensajeCliente()) {
 															consultaActual.setNuevoMensajeCliente(false);
@@ -974,6 +974,63 @@ public class RMA {
 			if (consultas.size() > index) {
 				if (consultas.get(index).getCliente().equals(user) || user.acceso() == 1) {
 					control = true;
+				} else {
+					menu.filaCentrada("#Error: Acceso denegado");
+				}
+
+			} else {
+				menu.filaCentrada("#Error: La consulta no existe");
+			}
+		} else {
+			menu.filaCentrada("#Error: Opcion no reconocida");
+		}
+		return control;
+	}
+	
+	public static boolean comprobarOpcionConsultaNueva(Usuario user, ArrayList<Consulta> consultas, String opcion) {
+		Menu menu = new Menu();
+		boolean control = false;
+		int index;
+		Pattern pat = Pattern.compile("[0-9]");
+		Matcher mat = pat.matcher(opcion);
+		if (mat.matches()) {
+			index = Integer.parseInt(opcion);
+			if (consultas.size() > index) {
+				if (consultas.get(index).getCliente().equals(user) || user.acceso() == 1) {
+					if(consultas.get(index).isNueva()) {
+						control = true;
+					}else {
+						menu.filaCentrada("#Error: Acceso denegado");
+					}	
+				} else {
+					menu.filaCentrada("#Error: Acceso denegado");
+				}
+
+			} else {
+				menu.filaCentrada("#Error: La consulta no existe");
+			}
+		} else {
+			menu.filaCentrada("#Error: Opcion no reconocida");
+		}
+		return control;
+	}
+	
+	public static boolean comprobarOpcionConsultaNuevosMensajes(Usuario user, ArrayList<Consulta> consultas, String opcion) {
+		Menu menu = new Menu();
+		boolean control = false;
+		int index;
+		Pattern pat = Pattern.compile("[0-9]");
+		Matcher mat = pat.matcher(opcion);
+		if (mat.matches()) {
+			index = Integer.parseInt(opcion);
+			if (consultas.size() > index) {
+				if (consultas.get(index).getCliente().equals(user) || user.acceso() == 1) {
+						if(consultas.get(index).isNuevoMensajeCliente() || consultas.get(index).isNuevoMensajeTecnico()) {
+							control = true;
+						}
+						else {
+							menu.filaCentrada("#Error: Acceso denegado");
+						}
 				} else {
 					menu.filaCentrada("#Error: Acceso denegado");
 				}
