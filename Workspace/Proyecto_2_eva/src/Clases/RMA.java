@@ -30,7 +30,7 @@ public class RMA {
 				"Solo numeros, letras y guiones" };
 		final String[] normasPass = { "Minimo 8 caracteres", "Mninimo 1 mayuscula", "Minimo 1 minuscula",
 				"Minimo un caracter especial", "Sin espacios" };
-		final String[] normasNombre = { "Entre 2 y 16 caracteres", "Solo letras" };
+		final String[] normasNombre = { "Entre 2 y 20 caracteres", "Solo letras" };
 		final String[] normasApellidos = { "Entre 2 y 12 caracteres", "Solo letras" };
 		final String[] normasDNI = { "Debe empezar por 8 digitos", "Debe terminar con una letra",
 				"NIE puede empezar por X, Y o Z" };
@@ -413,6 +413,7 @@ public class RMA {
 									case "5"://Cambiar contraseña
 										menu.ultimaFila();
 										menu.cabezera("CAMBIO DE CONTRASEÑA");
+										menu.generarNormas("CONTRASEÑA", normasPass);
 										do {
 											seguir = true;
 											menu.pedir("CONTRASEÑA ACTUAL");
@@ -590,6 +591,7 @@ public class RMA {
 									case "3":// Cambiar contraseña
 										menu.ultimaFila();
 										menu.cabezera("CAMBIO DE CONTRASEÑA");
+										menu.generarNormas("CONTRASEÑA", normasPass);
 										do {
 											seguir = true;
 											menu.pedir("CONTRASEÑA ACTUAL");
@@ -910,7 +912,7 @@ public class RMA {
 		 */
 		Menu menu = new Menu();
 		boolean control = false;
-		Pattern pat = Pattern.compile("^[a-zA-Z]{2,16}$");
+		Pattern pat = Pattern.compile("^[a-zA-Z\\s]{2,20}$");
 		Matcher mat = pat.matcher(nombre);
 		if (mat.matches()) {
 			control = true;
@@ -942,7 +944,7 @@ public class RMA {
 	public static boolean comprobarTitulo(String titulo) {
 		Menu menu = new Menu();
 		boolean control = false;
-		Pattern pat = Pattern.compile("^[a-zA-Z0-9]{4,20}$");
+		Pattern pat = Pattern.compile("[a-zA-Z-_@#$%^&+=\\s]{2,30}$");
 		Matcher mat = pat.matcher(titulo);
 		if (mat.matches()) {
 			control = true;
