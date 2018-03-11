@@ -303,6 +303,10 @@ public class Menu {
 
 	protected void mostrarMensajes(Consulta consulta) {
 		Iterator<Mensaje> it = consulta.getMensajes().iterator();
+		if(consulta.getMensajes().size() < 1) {
+			fila("No hay mensajes.");
+			subFila();
+		}
 		while (it.hasNext()) {
 			Mensaje m = it.next();
 			mostrarMensaje(m, consulta.getMensajes());

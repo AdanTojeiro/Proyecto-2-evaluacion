@@ -38,28 +38,7 @@ public class RMA {
 		ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 		ArrayList<Consulta> consultas = new ArrayList<Consulta>();
 		ArrayList<Consulta> historial = new ArrayList<Consulta>();
-		Cliente c = new Cliente("Mario", "jojo", "1", "1", "1");
-		Cliente c2 = new Cliente("pepe", "jojo", "1", "1", "1");
-		Tecnico t = new Tecnico("Sidorf", "jojo", "1", "1", "1");
-		usuarios.add(c);
-		usuarios.add(t);
-		consultas.add(new Consulta(c, "consulta1"));
-		consultas.add(new Consulta(c2, "consulta2"));
-		consultas.add(new Consulta(c, "consulta3"));
-		consultas.add(new Consulta(c2, "consulta4"));
-		consultas.add(new Consulta(c, "consulta5"));
-		consultas.get(0).addMensaje(new Mensaje(c,
-				"Hola tengo un problema con mi ordenador. Me gustaria hablar con un tecnico. Grasias de antebraso."));
-		consultas.get(0).addMensaje(
-				new Mensaje(t, "Hola yo sou un tecnico y ademas soy 100tifico, que te sucede loco que te ayudo."));
-		consultas.get(0)
-				.addMensaje(new Mensaje(c, "Como hago pa meter internet en un usb y llevarmelo donde me agüela."));
-		consultas.get(0)
-				.addMensaje(new Mensaje(t, "Tienes que arrastrar el icono dentro del usb, mira a ver si funsiona"));
-		consultas.get(0).addMensaje(new Mensaje(c, "Vale ya esta ahora como pruebo si funsiona?"));
-		consultas.get(0).addMensaje(new Mensaje(t,
-				"Mira a ver si tienes una carpeta que se llama system32, es un virus loco, BORRALA YA! TE JACKIARON WEY!"));
-		consultas.get(0).addMensaje(new Mensaje(c, "Una despedida sin cabras es un cumpleaños."));
+		
 
 		// Bucle de login
 		do {
@@ -737,6 +716,30 @@ public class RMA {
 				menu.filaCentrada("Fin del programa");
 				menu.ultimaFila();
 				seguir = false;
+				break;
+			case "/test":
+				Cliente c = new Cliente("Mercadonio", "jojo", "1", "1", "1");
+				Cliente c2 = new Cliente("SinGluten18", "jojo", "1", "1", "1");
+				Tecnico t = new Tecnico("Atipofijo", "jojo", "1", "1", "1");
+				usuarios.add(c);
+				usuarios.add(t);
+				consultas.add(new Consulta(c, "Navazo 4ever"));
+				consultas.add(new Consulta(c2, "Algo pasa con Mery"));
+				consultas.add(new Consulta(c, "Mercadona"));
+				consultas.add(new Consulta(c2, "Una de champin"));
+				consultas.add(new Consulta(c, "Siroco radical"));
+				consultas.get(0).addMensaje(new Mensaje(c,
+						"Hola Navazo para ¿La proxima evaluacion podrias hacernos un examen por tema de entornos?"));
+				consultas.get(0).addMensaje(
+						new Mensaje(t, "Esque hace un rato estaba estudiando el tema 3 y 4 y me he preguntado ¿Que estas haciendo con tu vida?."));
+				consultas.get(0)
+						.addMensaje(new Mensaje(c, "Si esque se me va a olvidar a la que me de un golpe en la cabeza o me tome dos cubatas."));
+				consultas.get(0)
+						.addMensaje(new Mensaje(t, "Que si hay que estudiar se estudia, pero estudiar pa na es tonteria."));
+				consultas.get(0).addMensaje(new Mensaje(c, "Podria estar viendo un capitulo de UPA Dance que me entretiene a la par que me enseña valiosas lecciones de la vida como que hacer si tu padre no acepta que quieras dedicarte a bailar y llevar camisetas sin mangas pero con cuello alto."));
+				consultas.get(0).addMensaje(new Mensaje(t,
+						"Estas a puntinto de ganar el trofeo al profesor del trimestre, Jorge iba bien pero con el examen de subneting la cago"));
+				consultas.get(0).addMensaje(new Mensaje(c, "PD: ¿Te ha gustado la foto del mono de la documentacion? Me flipan lo monos."));
 				break;
 			default: // Error opcion
 				menu.ultimaFila();
